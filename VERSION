@@ -1,0 +1,5 @@
+# Major and minor versions for semantic versioning
+# Patch version increments automatically on each merge
+# Update MINOR here to trigger minor version bump
+MAJOR=0
+MINOR=0

@@ -1,0 +1,62 @@
+name: Create Release Tag
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        run: |
+          # Read major and minor versions from VERSION file
+          if [ -f VERSION ]; then
+            MAJOR=$(grep "^MAJOR=" VERSION | cut -d= -f2)
+            MINOR=$(grep "^MINOR=" VERSION | cut -d= -f2)
+          else
+            MAJOR=0
+            MINOR=0
+          fi
+          
+          # Get latest patch version for this MAJOR.MINOR
+          LATEST_TAG=$(git tag -l "v${MAJOR}.${MINOR}.*" --sort=-version:refname | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            PATCH=0
+          else
+            PATCH=$(echo $LATEST_TAG | cut -d. -f3)
+            PATCH=$((PATCH + 1))
+          fi
+          
+          echo "MAJOR=$MAJOR" >> $GITHUB_ENV
+          echo "MINOR=$MINOR" >> $GITHUB_ENV
+          echo "PATCH=$PATCH" >> $GITHUB_ENV
+
+      - name: Create tags
+        run: |
+          DATE=$(date +%Y%m%d)
+          SEMVER_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+          
+          # Increment date patch if date tag already exists
+          DATE_PATCH=0
+          while git rev-parse "refs/tags/${DATE}.${DATE_PATCH}" >/dev/null 2>&1; do
+            DATE_PATCH=$((DATE_PATCH + 1))
+          done
+          DATE_TAG="${DATE}.${DATE_PATCH}"
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git tag $DATE_TAG
+          git tag $SEMVER_TAG
+          git push origin $DATE_TAG $SEMVER_TAG
+          
+          echo "Created tags: $DATE_TAG, $SEMVER_TAG"
