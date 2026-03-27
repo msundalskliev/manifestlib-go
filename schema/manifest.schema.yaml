@@ -1,0 +1,44 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Shared manifest.yaml"
+type: object
+required: [manifest]
+additionalProperties: false
+properties:
+  manifest:
+    type: object
+    required: [metadata, includes]
+    additionalProperties: false
+    properties:
+      metadata:
+        type: object
+        required: [repo]
+        additionalProperties: false
+        properties:
+          repo:
+            type: object
+            required: [url, branch]
+            additionalProperties: false
+            properties:
+              url:
+                type: string
+              branch:
+                type: string
+              tag:
+                type: [string, "null"]
+      includes:
+        type: object
+        minProperties: 1
+        additionalProperties:
+          type: string
+      configurations:
+        type: object
+        additionalProperties:
+          type: object
+      sources:
+        type: object
+      artifacts:
+        type: object
+      tools:
+        type: object
+      versions:
+        type: object
