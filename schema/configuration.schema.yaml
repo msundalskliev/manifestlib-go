@@ -1,0 +1,38 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Shared configuration.yaml"
+type: object
+required: [configuration]
+additionalProperties: false
+properties:
+  configuration:
+    type: object
+    required: [metadata]
+    additionalProperties: false
+    properties:
+      metadata:
+        type: object
+        required: [structure]
+        additionalProperties: false
+        properties:
+          structure:
+            type: object
+            additionalProperties:
+              type: object
+              required: [includes]
+              additionalProperties: false
+              properties:
+                backend:
+                  type: object
+                  additionalProperties:
+                    type: string
+                includes:
+                  type: object
+                  additionalProperties:
+                    type: string
+                include_order:
+                  type: array
+                  items:
+                    type: string
+            properties:
+              root:
+                type: string
